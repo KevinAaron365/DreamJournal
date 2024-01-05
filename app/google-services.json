@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "571883397898",
+    "project_id": "dream-app-1773a",
+    "storage_bucket": "dream-app-1773a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:571883397898:android:01e2ca7db8b136d31290f3",
+        "android_client_info": {
+          "package_name": "com.example.dreamjournal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzacoPzahxsvwPAaf-vyqywNWXfgxTjx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
