@@ -12,11 +12,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
-        android:fontFamily="@font/playfairdisplay_bold"
+        android:fontFamily="@font/poppins_medium"
         android:letterSpacing=".2"
         android:text="SLEEP TIMER"
         android:textColor="#000000"
-        android:textSize="24sp"
+        android:textSize="26sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -52,13 +52,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:fontFamily="serif"
+            android:fontFamily="@font/poppins_semibold"
             android:text="00:00"
+            android:paddingTop="16dp"
             android:textColor="@color/black"
             android:textSize="60sp"
             android:textStyle="bold"
-            tools:layout_editor_absoluteX="177dp"
-            tools:layout_editor_absoluteY="380dp" />
+ />
 
 
     </RelativeLayout>
@@ -92,6 +92,7 @@
         android:layout_marginTop="24dp"
         android:text="Start timer"
         android:textAllCaps="false"
+        android:includeFontPadding="false"
         app:layout_constraintEnd_toEndOf="@+id/resetTimerButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextSetHoursLayout" />
@@ -136,6 +137,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="#D56F7D"
+        android:includeFontPadding="false"
         android:text="Reset timer"
         android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="parent"
@@ -148,6 +150,7 @@
         android:layout_marginStart="32dp"
         android:text="Pause timer"
         android:textAllCaps="false"
+        android:includeFontPadding="false"
         app:layout_constraintEnd_toEndOf="@+id/resumeTimerButton"
         app:layout_constraintStart_toEndOf="@+id/startTimerButton"
         app:layout_constraintTop_toTopOf="@+id/startTimerButton" />
@@ -160,6 +163,7 @@
         android:layout_marginTop="16dp"
         android:text="Resume timer"
         android:textAllCaps="false"
+        android:includeFontPadding="false"
         app:layout_constraintStart_toEndOf="@+id/startTimerButton"
         app:layout_constraintTop_toBottomOf="@+id/pauseTimerButton" />
 

@@ -35,6 +35,8 @@ public class FavoriteDreamsAdapter extends RecyclerView.Adapter<FavoriteDreamsAd
         private final TextView descriptionTextView;
         private final TextView dateTextView;
 
+        private ImageView removeFavoriteDreamButton;
+
         private final TextView sender;
 
         private static final String TAG = "ViewHolder";
@@ -47,47 +49,43 @@ public class FavoriteDreamsAdapter extends RecyclerView.Adapter<FavoriteDreamsAd
             descriptionTextView =  view.findViewById(R.id.favoriteDreamItemDescription);
             dateTextView  =  view.findViewById(R.id.favoriteDreamItemDate);
             sender =  view.findViewById(R.id.favoriteDreamSenderUsername);
+            removeFavoriteDreamButton = view.findViewById(R.id.removeFavButton);
+
+
+            removeFavoriteDreamButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference().child("favs");
+
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            boolean contains = false;
+                            for (DataSnapshot favorite : snapshot.getChildren()) {
+                                String userID = favorite.child("userID").getValue(String.class);
+                                String dreamID = favorite.child("dreamID").getValue(String.class);
+//                                favorite.getRef().removeValue();
+
+                                String currentDreamID = currentDream.getDreamID();
+                                if (Data.userID.equals(userID) && currentDreamID.equals(dreamID)) {
+                                    favorite.getRef().removeValue();
+                                    contains = true;
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
 
 
 
-//            favoriteSharedDreamButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-//                    DatabaseReference myRef = database.getReference().child("favs");
-//
-//                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            boolean contains = false;
-//                            for (DataSnapshot favorite : snapshot.getChildren()) {
-//                                String userID = favorite.child("userID").getValue(String.class);
-//                                String dreamID = favorite.child("dreamID").getValue(String.class);
-//                                String currentDreamID = currentDream.getDreamID();
-//                                if (Data.userID.equals(userID) && currentDreamID.equals(dreamID)) {
-//                                    favorite.getRef().removeValue();
-//                                    contains = true;
-//                                }
-//
-//                            }
-//                            if (!contains) {
-//                                String uuid = UUID.randomUUID().toString();
-//                                myRef.child(uuid).child("userID").setValue(Data.userID);
-//                                myRef.child(uuid).child("dreamID").setValue(currentDream.getDreamID());
-//
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    });
-//
-//
-//
-//                }
-//            });
+                }
+            });
         }
 
         public FavoriteDream getCurrentDream() {

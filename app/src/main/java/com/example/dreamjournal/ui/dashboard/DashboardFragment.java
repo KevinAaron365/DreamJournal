@@ -1,5 +1,6 @@
 package com.example.dreamjournal.ui.dashboard;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,10 +33,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
+    private DatabaseReference myRef;
+
     private static final String TAG = "DashboardFragment";
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -47,15 +53,15 @@ public class DashboardFragment extends Fragment {
         ArrayList<Dream> dreamsList = new ArrayList<>();
 //        dreamsList.add(new Dream(234234, "Dream Title", "This is the description of the dream"));
 
-
         DreamsAdapter da = new DreamsAdapter(dreamsList);
 
         RecyclerView recyclerView = root.findViewById(R.id.dreamsRecyclerView);
         recyclerView.setAdapter(da);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        Log.d("DATA", "onCreateView: Data UserID" + Data.userID);
+        myRef = database.getReference().child(Data.userID).child("dreams");
 
-        DatabaseReference myRef = database.getReference().child(Data.userID).child("dreams");
         // Read from the database
 
         myRef.addValueEventListener(new ValueEventListener() {
@@ -91,13 +97,14 @@ public class DashboardFragment extends Fragment {
         addDreamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("123", "Button clicked");
 
                 Intent i = new Intent(getContext(), AddDreamActivity.class);
 
                 startActivity(i);
             }
         });
+
+
 
 
         return root;

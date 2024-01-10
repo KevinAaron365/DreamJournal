@@ -59,6 +59,8 @@ public class CalendarFragment extends Fragment {
     CalendarDreamsAdapter da;
     private RecyclerView recyclerView;
 
+    private DatabaseReference myRef;
+
     private ArrayList<CalendarDream> calendarDreamsList;
 
     public static CalendarFragment newInstance() {
@@ -85,8 +87,9 @@ public class CalendarFragment extends Fragment {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference myRef = database.getReference().child(Data.userID).child("dreams");
-
+        if (Data.userID != null) {
+            myRef = database.getReference().child(Data.userID).child("dreams");
+        }
 
         View view  = inflater.inflate(R.layout.fragment_calendar, container, false);
         CalendarView calendarView = view.findViewById(R.id.calendarView);

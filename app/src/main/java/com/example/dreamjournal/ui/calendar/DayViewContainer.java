@@ -7,29 +7,45 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.dreamjournal.R;
+import com.example.dreamjournal.data.Data;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kizitonwose.calendar.core.CalendarDay;
 import com.kizitonwose.calendar.core.DayPosition;
 import com.kizitonwose.calendar.view.CalendarView;
 import com.kizitonwose.calendar.view.ViewContainer;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.TimeZone;
 
 class DayViewContainer extends ViewContainer {
 
-
+    private static final String TAG = "DayViewContainer";
     private TextView textView;
 
     private CalendarDay day;
+    private boolean checked = false;
+
+    int count = 0;
 
     private TextView selectedDateTextView;
 
+    private ConstraintLayout calendarDayLayout;
+
+    private TextView dreamsAmountTextView;
 
     public final MutableLiveData<LocalDate> selectedDate;
 
@@ -42,6 +58,8 @@ class DayViewContainer extends ViewContainer {
         this.selectedDate = selectedDate;
         this.selectedDateTextView = selectedDateTextView;
         textView = view.findViewById(R.id.calendarDayText);
+        calendarDayLayout = view.findViewById(R.id.calendarDayLayout);
+        dreamsAmountTextView = view.findViewById(R.id.dreamsAmountTextView);
 
 
 
@@ -56,10 +74,52 @@ class DayViewContainer extends ViewContainer {
     }
 
     public void onBindView(CalendarDay calendarDay, CalendarView calendarView) {
+        if (!checked) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference().child(Data.userID).child("dreams");
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    dreamsAmountTextView.setText("");
+
+                    for (DataSnapshot d : snapshot.getChildren()) {
+
+                        long dreamDate = !d.child("date").exists() ? 0 : d.child("date").getValue(Long.class);
+                        Instant instant = Instant.ofEpochSecond(dreamDate);
+                        ZoneId zoneId = ZoneId.systemDefault();
+                        LocalDate dreamLocalDate = instant.atZone(zoneId).toLocalDate();
+
+                        Log.d(TAG, "database date: " + calendarDay.getDate().toString());
+
+                        if (selectedDate.getValue() != null) {
+                            Log.d(TAG, "Selected date: " + selectedDate.getValue().toString());
+                            if (dreamLocalDate.isEqual(calendarDay.getDate())) {
+                                count++;
+                                if (count <= 3) {
+                                    dreamsAmountTextView.setText(dreamsAmountTextView.getText() + ".");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+
+
+            });
+            checked = true;
+
+        }
+
+
+
         day = calendarDay;
         textView.setText(String.valueOf(calendarDay.getDate().getDayOfMonth()));
 
-        textView.setOnClickListener(new View.OnClickListener() {
+        calendarDayLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Date date = new Date();
@@ -78,7 +138,7 @@ class DayViewContainer extends ViewContainer {
 //                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd, yyyy");
 //                            String formattedDate = selectedDate.getValue().format(formatter);
 //                            DayViewContainer.this.selectedDate.setValue(selectedDate.getValue());
-                            DayViewContainer.this.selectedDateTextView.setText(selectedDate.getValue().format(DateTimeFormatter.ofPattern("MM / dd / yyyy")));
+                            DayViewContainer.this.selectedDateTextView.setText(selectedDate.getValue().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")));
                         }
                             calendarView.notifyDateChanged(calendarDay.getDate());
                         if (currentSelection != null) {
@@ -100,12 +160,15 @@ class DayViewContainer extends ViewContainer {
             textView.setVisibility(View.VISIBLE);
             if (calendarDay.getDate()==selectedDate.getValue()) {
                 textView.setTextColor(Color.WHITE);
-                textView.setBackgroundResource(R.drawable.selection_background);
+                dreamsAmountTextView.setTextColor(Color.WHITE);
+                calendarDayLayout.setBackgroundResource(R.drawable.selection_background);
                 Log.d("date", "selected date: " + selectedDate.getValue().toString());
             }
             else {
                 textView.setTextColor(Color.BLACK);
-                textView.setBackground(null);
+                dreamsAmountTextView.setTextColor(Color.BLACK);
+
+                calendarDayLayout.setBackground(null);
             }
 
         }  else {
@@ -116,9 +179,11 @@ class DayViewContainer extends ViewContainer {
         if (calendarDay.getDate().toString().equals(todayDate.toString()) && selectedDate.getValue() == null)  {
             selectedDate.setValue(todayDate);
             textView.setTextColor(Color.WHITE);
-            textView.setBackgroundResource(R.drawable.selection_background);
+            dreamsAmountTextView.setTextColor(Color.WHITE);
+
+            calendarDayLayout.setBackgroundResource(R.drawable.selection_background);
             if (selectedDate.getValue() != null) {
-                DayViewContainer.this.selectedDateTextView.setText(selectedDate.getValue().format(DateTimeFormatter.ofPattern("MM / dd / yyyy")));
+                DayViewContainer.this.selectedDateTextView.setText(selectedDate.getValue().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")));
             }
         }
     }
